@@ -1,17 +1,39 @@
 import express from 'express';
+import path from "path";
+import { fileURLToPath } from "url";
 import cors from 'cors';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import puppeteer from 'puppeteer';
 import { Alchemy, Network } from "alchemy-sdk";
 
-// collection address
-const address = "0x5Af0D9827E0c53E4799BB226655A1de152A425a5";
-
+////////////////////////////////////////////////////////////
+//						sart server						  //
+////////////////////////////////////////////////////////////
 const app = express();
 app.use(cors());
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+
+const __filename = fileURLToPath( import.meta.url );
+
+const __dirname = path.dirname( __filename );
+
+app.use( express.static( __dirname + "/build" ) );
+
+app.get("", (req, res) => {
+	res.sendFile(__dirname + "/build/index.html");
+});
+
+// start the server
+app.listen(PORT, () => {
+	console.log(`Server listening on port ${PORT}`);
+});
+
+//////////////////////////////////////////////////////////////
+//					Start Project							//
+//////////////////////////////////////////////////////////////
+// collection address
+const address = "0x5Af0D9827E0c53E4799BB226655A1de152A425a5";
 	
 // configure for alchemy
 const config = {
@@ -262,6 +284,7 @@ const createRecord = async (tableName, data_) => {
         console.error(error);
     }
 }
+
 
 // Update an existing record in a table
 const updateRecord = async (tableName, recordID, data) => {
